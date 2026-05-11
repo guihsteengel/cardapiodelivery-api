@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel de Pedidos</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #121212;
+    color: white;
+    margin: 0;
+}
+
+/* HEADER */
+.header {
+    background: #ff3d00;
+    padding: 20px;
+    text-align: center;
+}
+
+/* DASHBOARD */
+.dashboard {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    flex-wrap: wrap;
+}
+
+.card-metric {
+    flex: 1;
+    min-width: 150px;
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.card-metric span {
+    display: block;
+    font-size: 22px;
+    margin-top: 5px;
+    color: #4caf50;
+}
+
+/* BOARD */
+.board {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+.column {
+    flex: 1;
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.column h2 {
+    text-align: center;
+}
+
+/* CARD NOVO */
+.card {
+    background: #2a2a2a;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px rgba(255,61,0,0.5);
+}
+
+/* HEADER DO CARD */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+/* STATUS BADGE */
+.status {
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* CORES STATUS */
+.pending { background: #ffc107; color: black; }
+.preparing { background: orange; }
+.ontheway { background: blue; }
+.delivered { background: green; }
+.canceled { background: red; }
+
+/* TOTAL */
+.total {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4caf50;
+}
+
+/* BOTÕES */
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.preparar { background: orange; }
+.enviar { background: blue; color: white; }
+.finalizar { background: green; color: white; }
+.cancelar { background: red; color: white; }
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>📊 Painel de Pedidos</h1>
+</div>
+
+<div class="dashboard">
+    <div class="card-metric">
+        Pedidos
+        <span id="totalOrders">0</span>
+    </div>
+    <div class="card-metric">
+        Faturamento
+        <span id="totalRevenue">R$ 0,00</span>
+    </div>
+    <div class="card-metric">
+        Em andamento
+        <span id="inProgress">0</span>
+    </div>
+</div>
+
+<div class="board">
+    <div class="column"><h2>Pendente</h2><div id="pending"></div></div>
+    <div class="column"><h2>Preparando</h2><div id="preparing"></div></div>
+    <div class="column"><h2>A caminho</h2><div id="ontheway"></div></div>
+    <div class="column"><h2>Entregue</h2><div id="delivered"></div></div>
+    <div class="column"><h2>Cancelado</h2><div id="canceled"></div></div>
+</div>
+
+<script>
+
+function traduzirStatus(status) {
+    switch(status) {
+        case "Pending": return "Pendente";
+        case "Preparing": return "Preparando";
+        case "OnTheWay": return "A caminho";
+        case "Delivered": return "Entregue";
+        case "Canceled": return "Cancelado";
+        default: return status;
+    }
+}
+
+function getStatusClass(status){
+    return status.toLowerCase();
+}
+
+function formatPrice(v){
+    return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+async function loadOrders() {
+    const res = await fetch("http://localhost:5283/api/order");
+    const orders = await res.json();
+
+    ["pending","preparing","ontheway","delivered","canceled"]
+    .forEach(id => document.getElementById(id).innerHTML = "");
+
+    document.getElementById("totalOrders").innerText = orders.length;
+
+    const revenue = orders
+        .filter(o => o.status === "Delivered")
+        .reduce((sum, o) => sum + o.total, 0);
+
+    document.getElementById("totalRevenue").innerText = formatPrice(revenue);
+
+    const inProgress = orders.filter(o =>
+        o.status !== "Delivered" && o.status !== "Canceled"
+    ).length;
+
+    document.getElementById("inProgress").innerText = inProgress;
+
+    orders.forEach(o => {
+
+        let columnId = o.status.toLowerCase();
+
+        const div = document.createElement("div");
+        div.classList.add("card");
+
+        let buttons = "";
+
+        if (o.status === "Pending") {
+            buttons = `<button class="preparar" onclick="updateStatus(${o.id}, 'Preparing')">Preparar</button>`;
+        }
+
+        if (o.status === "Preparing") {
+            buttons = `<button class="enviar" onclick="updateStatus(${o.id}, 'OnTheWay')">Enviar</button>`;
+        }
+
+        if (o.status === "OnTheWay") {
+            buttons = `
+                <button class="finalizar" onclick="updateStatus(${o.id}, 'Delivered')">Finalizar</button>
+                <button class="cancelar" onclick="updateStatus(${o.id}, 'Canceled')">Cancelar</button>
+            `;
+        }
+
+        div.innerHTML = `
+            <div class="card-header">
+                <strong>Pedido #${o.id}</strong>
+                <span class="status ${getStatusClass(o.status)}">
+                    ${traduzirStatus(o.status)}
+                </span>
+            </div>
+
+            <div class="total">${formatPrice(o.total)}</div>
+
+            <div class="buttons">${buttons}</div>
+        `;
+
+        document.getElementById(columnId).appendChild(div);
+    });
+}
+
+async function updateStatus(id, status) {
+    await fetch(`http://localhost:5283/api/order/${id}/status`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ status })
+    });
+
+    loadOrders();
+}
+
+setInterval(loadOrders, 3000);
+loadOrders();
+
+</script>
+
+</body>
+</html>
