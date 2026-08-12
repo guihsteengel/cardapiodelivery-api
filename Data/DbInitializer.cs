@@ -8,6 +8,20 @@ namespace FoodDelivery.Api.Data
         {
             context.Database.EnsureCreated();
 
+            // 🔹 RESTAURANTE
+            if (!context.Restaurants.Any())
+            {
+                context.Restaurants.Add(new Restaurant
+                {
+                    Name = "Lanchonete do Stengel",
+                    Address = "Rua Exemplo, 123",
+                    Phone = "(00) 00000-0000"
+                });
+                context.SaveChanges();
+            }
+
+            var restaurantId = context.Restaurants.First().Id;
+
             // 🔹 CATEGORIAS
             if (!context.Categories.Any())
             {
@@ -38,7 +52,8 @@ namespace FoodDelivery.Api.Data
                         Price = 25.90m,
                         ImageUrl = "/images/burger.jpg",
                         IsAvailable = true,
-                        CategoryId = lanchesId
+                        CategoryId = lanchesId,
+                        RestaurantId = restaurantId
                     },
                     new Product
                     {
@@ -47,7 +62,8 @@ namespace FoodDelivery.Api.Data
                         Price = 6.00m,
                         ImageUrl = "/images/coca.jpg",
                         IsAvailable = true,
-                        CategoryId = bebidasId
+                        CategoryId = bebidasId,
+                        RestaurantId = restaurantId
                     },
                     new Product
                     {
@@ -56,7 +72,8 @@ namespace FoodDelivery.Api.Data
                         Price = 10.00m,
                         ImageUrl = "/images/cocacola2l.jpg",
                         IsAvailable = true,
-                        CategoryId = bebidasId
+                        CategoryId = bebidasId,
+                        RestaurantId = restaurantId
                     },
                     new Product
                     {
@@ -65,7 +82,8 @@ namespace FoodDelivery.Api.Data
                         Price = 10.00m,
                         ImageUrl = "/images/brownie.jpg",
                         IsAvailable = true,
-                        CategoryId = sobremesasId
+                        CategoryId = sobremesasId,
+                        RestaurantId = restaurantId
                     }
                 };
 
