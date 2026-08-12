@@ -156,42 +156,42 @@ button {
 
 <script>
 
-function traduzirStatus(status) {
-    switch(status) {
-        case "Pending": return "Pendente";
-        case "Preparing": return "Preparando";
-        case "OnTheWay": return "A caminho";
-        case "Delivered": return "Entregue";
-        case "Canceled": return "Cancelado";
-        default: return status;
-    }
-}
+	function traduzirStatus(status) {
+	switch(status) {
+	case "Pending": return "Pendente";
+	case "Preparing": return "Preparando";
+	case "OnTheWay": return "A caminho";
+	case "Delivered": return "Entregue";
+	case "Canceled": return "Cancelado";
+	default: return status;
+	}
+	}
 
-function getStatusClass(status){
-    return status.toLowerCase();
-}
+	function getStatusClass(status){
+	return status.toLowerCase();
+	}
 
-function formatPrice(v){
-    return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-}
+	function formatPrice(v){
+	return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+	}
 
-async function loadOrders() {
-    const res = await fetch("http://localhost:5283/api/order");
-    const orders = await res.json();
+	async function loadOrders() {
+	const res = await fetch("https://cardapiodelivery-api.onrender.com/api/order");
+	const orders = await res.json();
 
-    ["pending","preparing","ontheway","delivered","canceled"]
-    .forEach(id => document.getElementById(id).innerHTML = "");
+	["pending","preparing","ontheway","delivered","canceled"]
+	.forEach(id => document.getElementById(id).innerHTML = "");
 
-    document.getElementById("totalOrders").innerText = orders.length;
+	document.getElementById("totalOrders").innerText = orders.length;
 
-    const revenue = orders
-        .filter(o => o.status === "Delivered")
-        .reduce((sum, o) => sum + o.total, 0);
+	const revenue = orders
+	.filter(o => o.status === "Delivered")
+	.reduce((sum, o) => sum + o.total, 0);
 
-    document.getElementById("totalRevenue").innerText = formatPrice(revenue);
+	document.getElementById("totalRevenue").innerText = formatPrice(revenue);
 
-    const inProgress = orders.filter(o =>
-        o.status !== "Delivered" && o.status !== "Canceled"
+	const inProgress = orders.filter(o =>
+	o.status !== "Delivered" && o.status !== "Canceled"
     ).length;
 
     document.getElementById("inProgress").innerText = inProgress;
@@ -238,7 +238,7 @@ async function loadOrders() {
 }
 
 async function updateStatus(id, status) {
-    await fetch(`http://localhost:5283/api/order/${id}/status`, {
+    await fetch(`https://cardapiodelivery-api.onrender.com/api/order/${id}/status`, {
         method: "PUT",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ status })
