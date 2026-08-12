@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔧 SERVICES
+// ?? SERVICES
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -17,7 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 🔥 CORS
+// ?? CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -28,28 +28,31 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 🔥 PORTA
+// ?? PORTA
+// Em produção (Render, Railway, etc.) a porta vem da variável de ambiente PORT.
+// Localmente, se PORT não existir, cai no 5283 como antes.
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5283";
 app.Urls.Clear();
-app.Urls.Add("http://localhost:5283");
+app.Urls.Add($"http://0.0.0.0:{port}");
 
-// 🔥 STATIC FILES
+// ?? STATIC FILES
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// 🔥 CORS
+// ?? CORS
 app.UseCors("AllowAll");
 
-// 🔥 SWAGGER
+// ?? SWAGGER
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// 🔥 AUTH
+// ?? AUTH
 app.UseAuthorization();
 
 app.MapControllers();
 
 
-// 🔥 SEED AUTOMÁTICO (AQUI ESTÁ O OURO)
+// ?? SEED AUTOMÁTICO (AQUI ESTÁ O OURO)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -57,15 +60,18 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-// 🔥 ABRIR NAVEGADOR
-try
+// ?? ABRIR NAVEGADOR (só funciona em ambiente local com interface gráfica)
+if (app.Environment.IsDevelopment())
 {
-    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+    try
     {
-        FileName = "http://localhost:5283/swagger",
-        UseShellExecute = true
-    });
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = $"http://localhost:{port}/swagger",
+            UseShellExecute = true
+        });
+    }
+    catch { }
 }
-catch { }
 
 app.Run();
