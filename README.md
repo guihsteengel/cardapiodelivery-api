@@ -1,78 +1,54 @@
-# 🍔 Cardapio Digital Delivery API
+# 🍔 Cardápio Digital Delivery API
 
-Projeto de estudos desenvolvido em ASP.NET Core + PostgreSQL simulando um sistema de delivery.
+API REST desenvolvida em **C# e ASP.NET Core** para um sistema de cardápio digital e delivery.
 
-## 🚀 Funcionalidades
+O projeto possui **frontend integrado**, gerenciamento de produtos e categorias, carrinho de compras e pedidos, utilizando **PostgreSQL** como banco de dados.
 
-- Cadastro de produtos
+## 🚀 Projeto Online
+
+🍔 **Cardápio Digital:**  
+https://cardapiodelivery-api.onrender.com/
+
+📚 **Swagger:**  
+https://cardapiodelivery-api.onrender.com/swagger
+
+💻 **Portfólio:**  
+https://portfolioguistengel.netlify.app/
+
+## ⚙️ Funcionalidades
+
+- Cadastro e consulta de produtos
 - Categorias
 - Carrinho de compras
-- Adicionar/remover itens
+- Adicionar e remover itens
 - Controle de quantidade
 - Finalização de pedidos
-- Painel de pedidos
+- Gerenciamento de pedidos
 - Integração Frontend + Backend
 - API REST
-- Entity Framework Core
-- PostgreSQL
+- Documentação com Swagger
 
----
-
-## 🛠 Tecnologias utilizadas
+## 🛠️ Tecnologias
 
 - C#
 - ASP.NET Core
 - Entity Framework Core
 - PostgreSQL
-- HTML
-- CSS
+- HTML5
+- CSS3
 - JavaScript
+- Swagger / OpenAPI
 
----
+## 📚 Objetivo
 
-## 📸 Interface
+Projeto desenvolvido para colocar em prática conceitos de **desenvolvimento Backend com .NET**, APIs REST, Entity Framework Core, PostgreSQL e integração entre frontend e backend.
 
-Sistema com:
+## 👨‍💻 Autor
 
-- Cardápio visual
-- Carrinho lateral
-- Modal de finalização
-- Painel administrativo de pedidos
+**Guilherme Stengel**
 
----
+🎓 Ciência da Computação  
+💻 C# | .NET | ASP.NET Core | PostgreSQL
 
-## 📚 Aprendizados
-
-Durante o desenvolvimento foram trabalhados conceitos como:
-
-- Relacionamentos no banco de dados
-- API REST
-- Organização de Controllers
-- Manipulação de JSON
-- Integração com banco PostgreSQL
-- Consumo de API com Fetch
-- Tratamento de erros
-- Estruturação de frontend
-
----
-
-## ▶ Como executar
-
-### Backend
-
-```bash
-dotnet run
-
-API rodando em: http://localhost:5283
-
-## Banco de dados
-
-Banco PostgreSQL rodando em: localhost:5432
-configurar string de conexão no appsettings.json
-"ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5432;Database=cardapio_db;Username=postgres;Password=123456"
-}
-
-👨‍💻 Autor
-
-Desenvolvido por Guilherme Stengel como projeto de estudos.
+🔗 GitHub: https://github.com/guihsteengel  
+🔗 Portfólio: https://portfolioguistengel.netlify.app/
